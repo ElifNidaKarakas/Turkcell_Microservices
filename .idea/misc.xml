@@ -7,6 +7,9 @@
         <option value="$PROJECT_DIR$/orderservice/pom.xml" />
         <option value="$PROJECT_DIR$/productservice/pom.xml" />
         <option value="$PROJECT_DIR$/discovery-server/pom.xml" />
+        <option value="$PROJECT_DIR$/../turkcell-microservice/api-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/api-gateway/api-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/api-gateway/pom.xml" />
       </list>
     </option>
   </component>

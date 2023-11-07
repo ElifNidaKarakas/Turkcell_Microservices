@@ -1,4 +1,3 @@
-
 package com.turkcell.productservice.services;
 
 import com.turkcell.productservice.dto.requests.CreateProductRequest;
@@ -8,8 +7,6 @@ import com.turkcell.productservice.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +20,8 @@ public class ProductManager implements ProductService{
                 .name(request.getName())
                 .price(request.getPrice())
                 .description(request.getDescription())
-                .inventoryCode(request.getInventoryCode())
                 .stock(request.getStock())
+                .inventoryCode(request.getInventoryCode())
                 .build();
 
         product = productRepository.save(product);
@@ -36,14 +33,20 @@ public class ProductManager implements ProductService{
                 .build();
         return response;
     }
-    @Override
-    public Product getByInventoryCode(String code) {
 
-        List<Product> allProducts = productRepository.findAll();
-        Optional<Product> product = allProducts
-                .stream()
-                .filter((p) -> p.getInventoryCode().equals(code))
-                .findFirst();
-        return product.orElseThrow();
+
+
+    @Override
+    public Boolean getByInventoryCode(String code, int requiredStock) {
+        Product product = productRepository.findByInventoryCodeQuery(code);
+        if(product==null || product.getStock() < requiredStock)
+            return false;
+        return true;
+    }
+
+    @Override
+    public Integer getByStock(String code) {
+        Product product = productRepository.findByInventoryCodeQuery(code);
+        return product.getStock();
     }
 }
