@@ -1,0 +1,81 @@
+services:
+  discovery-service:
+    image: elifnidakarakas/discoveryserver
+    ports:
+      - 8761:8761
+    mem_limit: 700m
+    depends_on:
+      - keycloak
+  keycloak:
+    image: quay.io/keycloak/keycloak
+    ports:
+      - 8080:8080
+    mem_limit: 700m
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    command:
+      - start-dev
+  orderservice:
+    image: elifnidakarakas/orderservice
+    ports:
+      - 8081:8081
+    mem_limit: 700m
+  productservice:
+    image: elifnidakarakas/productservice
+    ports:
+      - 8082:8082
+    mem_limit: 700m
+  postgres:
+    container_name: postgres_container
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - 5432:5432
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+    mongo-express:
+      image: mongo-express
+      restart: always
+      ports:
+        - 8081:8081
+      environment:
+        ME_CONFIG_MONGODB_ADMINUSERNAME: root
+        ME_CONFIG_MONGODB_ADMINPASSWORD: example
+        ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+networks:
+  postgres:
+    driver:
+
+volumes:
+  postgres:
+  pgadmin:
