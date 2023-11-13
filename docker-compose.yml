@@ -9,23 +9,32 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak
     ports:
-      - 8080:8080
+      - 8083:8083
     mem_limit: 700m
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     command:
       - start-dev
+  api-gateway:
+    image: elifnidakarakas/api-gateway
+    ports:
+      - 8080:8080
+    mem_limit: 700m
   orderservice:
     image: elifnidakarakas/orderservice
     ports:
       - 8081:8081
     mem_limit: 700m
+    depends_on:
+      - postgres
   productservice:
     image: elifnidakarakas/productservice
     ports:
       - 8082:8082
     mem_limit: 700m
+    depends_on:
+      - mongo
   postgres:
     container_name: postgres_container
     image: postgres:latest
@@ -56,26 +65,44 @@ services:
     networks:
       - postgres
     restart: unless-stopped
-  mongo:
+  mongodb:
     image: mongo
-    restart: always
+    ports:
+      - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-
-    mongo-express:
-      image: mongo-express
-      restart: always
+      MONGO_INITDB_ROOT_PASSWORD: root
+    zookeeper:
+      image: confluentinc/cp-zookeeper
       ports:
-        - 8081:8081
+        - 2181:2181
       environment:
-        ME_CONFIG_MONGODB_ADMINUSERNAME: root
-        ME_CONFIG_MONGODB_ADMINPASSWORD: example
-        ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+        ZOOKEEPER_CLIENT_PORT: 2181
+    kafka:
+      image: confluentinc/cp-kafka
+      ports:
+        - 9092:9092
+      environment:
+        KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+        KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+        KAFKA_BROKER_ID: 1
+        KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+        kafka-manager:
+          image: hlebalbau/kafka-manager
+          ports:
+            - 9000:9000
+          environment:
+            ZK_HOSTS: zookeeper:2181
+          depends_on:
+            - kafka
 networks:
   postgres:
-    driver:
+    driver: bridge
 
 volumes:
   postgres:
   pgadmin:
+
+
+

@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
         <module name="discovery-server" />
+        <module name="notificationservice" />
         <module name="orderservice" />
         <module name="productservice" />
       </profile>
@@ -16,6 +17,8 @@
     <bytecodeTargetLevel>
       <module name="api-gateway (1)" target="17" />
       <module name="api-gateway (2)" target="17" />
+      <module name="notificationservice (1)" target="17" />
+      <module name="notificationservice (2)" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -24,6 +27,9 @@
       <module name="api-gateway (1)" options="-parameters" />
       <module name="api-gateway (2)" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
+      <module name="notificationservice" options="-parameters" />
+      <module name="notificationservice (1)" options="-parameters" />
+      <module name="notificationservice (2)" options="-parameters" />
       <module name="orderservice" options="-parameters" />
       <module name="productservice" options="-parameters" />
     </option>
